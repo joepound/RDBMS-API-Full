@@ -10,16 +10,49 @@ router.get("/", async (req, res) => {
     res.status(200).json({
       success: true,
       cohorts
-    })
+    });
   } catch (err) {
     const code = 500;
     res.status(code).json({
       success: false,
       code,
-      errorInfo: errors.GET_ALL_ACTIONS_FAILURE
+      errorInfo: err
     });
   } finally {
     console.log("GET all cohorts attempt finished.");
+  }
+});
+
+router.get("/:id", async (req, res) => {
+  const { id } = req.params;
+
+  console.log(`\nAttempting to GET cohort with ID [${id}]...`);
+  try {
+    const cohort = await db("cohorts")
+      .where({ id })
+      .first();
+    if (cohort) {
+      res.status(200).json({
+        success: true,
+        cohort
+      });
+    } else {
+      const code = 404;
+      res.status(code).json({
+        success: false,
+        code,
+        errorInfo: err
+      });
+    }
+  } catch (err) {
+    const code = 500;
+    res.status(code).json({
+      success: false,
+      code,
+      errorInfo: err
+    });
+  } finally {
+    console.log("GET attempt for cohort ID [${id}] finished.");
   }
 });
 
