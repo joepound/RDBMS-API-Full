@@ -56,4 +56,27 @@ router.get("/:id", async (req, res) => {
   }
 });
 
+router.get("/:id/students", async (req, res) => {
+  const { id } = req.params;
+
+  console.log(`\nAttempting to GET all students in cohort with ID [${id}]...`);
+  try {
+    const students = await db("cohorts")
+      .join("students", {
+        "cohorts.id": "students.cohort_id"
+      })
+      .where({ "cohorts.id": id });
+    res.status(200).json(students);
+  } catch (err) {
+    const code = 500;
+    res.status(code).json({
+      success: false,
+      code,
+      errorInfo: err
+    });
+  } finally {
+    console.log("GET attempt for cohort ID [${id}] finished.");
+  }
+});
+
 module.exports = router;
