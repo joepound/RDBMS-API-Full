@@ -3,6 +3,38 @@ const router = express.Router();
 
 const db = require("../data/dbConfig");
 
+router.post("/", async (req, res) => {
+  console.log("\nAttempting to POST new cohort...");
+
+  const cohortInfo = req.body;
+
+  console.log("Checking if name was supplied...");
+  if (cohortInfo.name) {
+    console.log("Proceeding to add the new cohort...");
+    try {
+      await db("cohorts").insert(cohortInfo);
+      res.sendStatus(201);
+    } catch (err) {
+      const code = 500;
+      res.status(code).json({
+        success: false,
+        code,
+        errorInfo: err
+      });
+    } finally {
+      console.log("Action POST attempt finished.");
+    }
+  } else {
+    const code = 400;
+    res.status(code).json({
+      success: false,
+      code,
+      errorInfo: err
+    });
+    console.log("Action POST attempt finished.");
+  }
+});
+
 router.get("/", async (req, res) => {
   console.log("\nAttempting to GET all cohorts...");
   try {
