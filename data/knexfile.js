@@ -1,7 +1,27 @@
 module.exports = {
-  client: "sqlite3",
-  connection: {
-    filename: "./data/lambda.sqlite3"
+  // For Knex CLI only (use config named "server" for actual dev use)
+  development: {
+    client: "sqlite3",
+    connection: {
+      filename: "./lambda.sqlite3"
+    },
+    useNullAsDefault: true
   },
-  useNullAsDefault: true
+
+  // For actual dev use
+  server: {
+    client: "sqlite3",
+    connection: {
+      filename: "./data/lambda.sqlite3"
+    },
+    useNullAsDefault: true
+  },
+
+  production: {
+    client: "sqlite3",
+    connection: {
+      filename: "./data/lambda.sqlite3"
+    },
+    useNullAsDefault: true
+  }
 };
