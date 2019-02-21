@@ -207,4 +207,34 @@ router.put("/:id", async (req, res) => {
   }
 });
 
+router.delete("/:id", async (req, res) => {
+  const { id } = req.params;
+
+  console.log(`\nAttempting to DELETE student with ID [${id}]...`);
+  try {
+    const deletedStudent = await db("students")
+      .where({ id })
+      .del();
+    if (deletedStudent) {
+      res.sendStatus(204);
+    } else {
+      const code = 404;
+      res.status(code).json({
+        success: false,
+        code,
+        errorInfo: `Student with ID [${id}] not found.`
+      });
+    }
+  } catch (err) {
+    const code = 500;
+    res.status(code).json({
+      success: false,
+      code,
+      errorInfo: err
+    });
+  } finally {
+    console.log(`Finished DELETE attempt for student with ID [${id}]`);
+  }
+});
+
 module.exports = router;
