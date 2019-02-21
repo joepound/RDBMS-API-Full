@@ -67,4 +67,57 @@ router.post("/", async (req, res) => {
   }
 });
 
+router.get("/", async (req, res) => {
+  console.log("\nAttempting to GET all students...");
+  try {
+    const students = await db("students");
+    res.status(200).json({
+      success: true,
+      students
+    });
+  } catch (err) {
+    const code = 500;
+    res.status(code).json({
+      success: false,
+      code,
+      errorInfo: err
+    });
+  } finally {
+    console.log("GET all students attempt finished.");
+  }
+});
+
+router.get("/:id", async (req, res) => {
+  const { id } = req.params;
+
+  console.log(`\nAttempting to GET student with ID [${id}]...`);
+  try {
+    const student = await db("students")
+      .where({ id })
+      .first();
+    if (student) {
+      res.status(200).json({
+        success: true,
+        student
+      });
+    } else {
+      const code = 404;
+      res.status(code).json({
+        success: false,
+        code,
+        errorInfo: `Student with ID [${id}] not found.`
+      });
+    }
+  } catch (err) {
+    const code = 500;
+    res.status(code).json({
+      success: false,
+      code,
+      errorInfo: err
+    });
+  } finally {
+    console.log("GET attempt for student ID [${id}] finished.");
+  }
+});
+
 module.exports = router;
