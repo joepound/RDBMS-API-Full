@@ -93,7 +93,10 @@ router.get("/:id", async (req, res) => {
   console.log(`\nAttempting to GET student with ID [${id}]...`);
   try {
     const student = await db("students")
-      .where({ id })
+      .select("students.id", "students.name", "cohorts.name as cohort")
+      .from("students")
+      .join("cohorts", { "cohorts.id": "students.cohort_id" })
+      .where({ "students.id": id })
       .first();
     if (student) {
       res.status(200).json({
