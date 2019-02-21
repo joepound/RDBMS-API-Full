@@ -120,4 +120,91 @@ router.get("/:id", async (req, res) => {
   }
 });
 
+router.put("/:id", async (req, res) => {
+  const { id } = req.params;
+
+  console.log(
+    `\nAttempting to PUT information updates for student with ID [${id}]...`
+  );
+
+  const infoUpdate = req.body;
+
+  console.log(
+    "Checking if all required fields were supplied and update is valid..."
+  );
+  if (infoUpdate.id) {
+    const code = 400;
+    res.status(code).json({
+      success: false,
+      code,
+      errorInfo: "ID updates are not allowed."
+    });
+    console.log(`Finished PUT attempt for student with ID [${id}]`);
+  } else if (infoUpdate.name || infoUpdate.cohort_id) {
+    if (infoUpdate.cohort_id) {
+      console.log(
+        `Checking if cohort with supplied ID [${
+          infoUpdate.cohort_id
+        }] exists...`
+      );
+      try {
+        const cohort = await db("cohorts")
+          .where({ id: infoUpdate.cohort_id })
+          .first();
+        if (!cohort) {
+          const code = 400;
+          res.status(code).json({
+            success: false,
+            code,
+            errorInfo: "Cohort ID does not belong to any existing cohort."
+          });
+          console.log(`Finished PUT attempt for student with ID [${id}]`);
+          return;
+        }
+      } catch {
+        const code = 500;
+        res.status(code).json({
+          success: false,
+          code,
+          errorInfo: err
+        });
+      }
+    }
+
+    console.log(`Proceeding to update student with ID [${id}]...`);
+    try {
+      const updatedStudent = await db("students")
+        .where({ id })
+        .update(infoUpdate);
+      if (updatedStudent) {
+        res.sendStatus(204);
+      } else {
+        const code = 404;
+        res.status(code).json({
+          success: false,
+          code,
+          errorInfo: `Student with ID [${id}] not found.`
+        });
+      }
+    } catch (err) {
+      const code = 500;
+      res.status(code).json({
+        success: false,
+        code,
+        errorInfo: err
+      });
+    } finally {
+      console.log(`Finished PUT attempt for student with ID [${id}]`);
+    }
+  } else {
+    const code = 400;
+    res.status(code).json({
+      success: false,
+      code,
+      errorInfo: "No update information supplied."
+    });
+    console.log(`Finished PUT attempt for student with ID [${id}]`);
+  }
+});
+
 module.exports = router;
