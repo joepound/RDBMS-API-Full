@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 
 const db = require("../data/dbConfig");
+const sqlErrors = require("./errors/sqlErrorList");
 
 router.post("/", async (req, res) => {
   console.log("\nAttempting to POST new student...");
@@ -43,7 +44,7 @@ router.post("/", async (req, res) => {
           res.status(code).json({
             success: false,
             code,
-            errorInfo: err
+            errorInfo: sqlErrors[err.errno]
           });
         }
       } else {
@@ -59,7 +60,7 @@ router.post("/", async (req, res) => {
       res.status(code).json({
         success: false,
         code,
-        errorInfo: err
+        errorInfo: sqlErrors[err.errno]
       });
     } finally {
       console.log("Student POST attempt finished.");
@@ -80,7 +81,7 @@ router.get("/", async (req, res) => {
     res.status(code).json({
       success: false,
       code,
-      errorInfo: err
+      errorInfo: sqlErrors[err.errno]
     });
   } finally {
     console.log("GET all students attempt finished.");
@@ -116,7 +117,7 @@ router.get("/:id", async (req, res) => {
     res.status(code).json({
       success: false,
       code,
-      errorInfo: err
+      errorInfo: sqlErrors[err.errno]
     });
   } finally {
     console.log("GET attempt for student ID [${id}] finished.");
@@ -169,7 +170,7 @@ router.put("/:id", async (req, res) => {
         res.status(code).json({
           success: false,
           code,
-          errorInfo: err
+          errorInfo: sqlErrors[err.errno]
         });
       }
     }
@@ -194,7 +195,7 @@ router.put("/:id", async (req, res) => {
       res.status(code).json({
         success: false,
         code,
-        errorInfo: err
+        errorInfo: sqlErrors[err.errno]
       });
     } finally {
       console.log(`Finished PUT attempt for student with ID [${id}]`);
@@ -233,7 +234,7 @@ router.delete("/:id", async (req, res) => {
     res.status(code).json({
       success: false,
       code,
-      errorInfo: err
+      errorInfo: sqlErrors[err.errno]
     });
   } finally {
     console.log(`Finished DELETE attempt for student with ID [${id}]`);

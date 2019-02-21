@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 
 const db = require("../data/dbConfig");
+const sqlErrors = require("./errors/sqlErrorList");
 
 router.post("/", async (req, res) => {
   console.log("\nAttempting to POST new cohort...");
@@ -19,7 +20,7 @@ router.post("/", async (req, res) => {
       res.status(code).json({
         success: false,
         code,
-        errorInfo: err
+        errorInfo: sqlErrors[err.errno]
       });
     } finally {
       console.log("Cohort POST attempt finished.");
@@ -48,7 +49,7 @@ router.get("/", async (req, res) => {
     res.status(code).json({
       success: false,
       code,
-      errorInfo: err
+      errorInfo: sqlErrors[err.errno]
     });
   } finally {
     console.log("GET all cohorts attempt finished.");
@@ -81,7 +82,7 @@ router.get("/:id", async (req, res) => {
     res.status(code).json({
       success: false,
       code,
-      errorInfo: err
+      errorInfo: sqlErrors[err.errno]
     });
   } finally {
     console.log("GET attempt for cohort ID [${id}] finished.");
@@ -113,7 +114,7 @@ router.get("/:id/students", async (req, res) => {
     res.status(code).json({
       success: false,
       code,
-      errorInfo: err
+      errorInfo: sqlErrors[err.errno]
     });
   } finally {
     console.log("GET attempt for cohort ID [${id}] finished.");
@@ -161,7 +162,7 @@ router.put("/:id", async (req, res) => {
       res.status(code).json({
         success: false,
         code,
-        errorInfo: err
+        errorInfo: sqlErrors[err.errno]
       });
     } finally {
       console.log(`Finished PUT attempt for cohort with ID [${id}]`);
@@ -200,7 +201,7 @@ router.delete("/:id", async (req, res) => {
     res.status(code).json({
       success: false,
       code,
-      errorInfo: err
+      errorInfo: sqlErrors[err.errno]
     });
   } finally {
     console.log(`Finished DELETE attempt for cohort with ID [${id}]`);

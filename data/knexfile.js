@@ -1,5 +1,5 @@
 module.exports = {
-  // For Knex CLI only (use config named "server" for actual dev use)
+  // For Knex CLI only (use config named "server" for actual dev use) - need to do this for file pathing
   development: {
     client: "sqlite3",
     connection: {
@@ -9,7 +9,7 @@ module.exports = {
   },
 
   // For actual dev use
-  server: {
+  devServer: {
     client: "sqlite3",
     connection: {
       filename: "./data/lambda.sqlite3"
