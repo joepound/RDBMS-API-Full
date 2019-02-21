@@ -6,6 +6,7 @@ const morgan = require("morgan");
 
 const rootRouter = require("./routes/rootRouter");
 const cohortsRouter = require("./routes/cohortsRouter");
+const studentsRouter = require("./routes/studentsRouter");
 const errorRouter = require("./routes/errorRouter");
 
 // server setup
@@ -20,6 +21,7 @@ server.use(morgan("dev"));
 
 // custom routing middleware
 server.use("/api/cohorts", cohortsRouter);
+server.use("/api/students", studentsRouter);
 server.use("/", rootRouter); // routing for root URL
 server.use(errorRouter); // routing for URL's resolving to bad queries
 

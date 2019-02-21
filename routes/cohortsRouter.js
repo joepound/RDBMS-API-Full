@@ -22,16 +22,16 @@ router.post("/", async (req, res) => {
         errorInfo: err
       });
     } finally {
-      console.log("Action POST attempt finished.");
+      console.log("Cohort POST attempt finished.");
     }
   } else {
     const code = 400;
     res.status(code).json({
       success: false,
       code,
-      errorInfo: err
+      errorInfo: "Name not supplied."
     });
-    console.log("Action POST attempt finished.");
+    console.log("Cohort POST attempt finished.");
   }
 });
 
@@ -73,7 +73,7 @@ router.get("/:id", async (req, res) => {
       res.status(code).json({
         success: false,
         code,
-        errorInfo: err
+        errorInfo: `Cohort with ID [${id}] not found.`
       });
     }
   } catch (err) {
@@ -98,7 +98,16 @@ router.get("/:id/students", async (req, res) => {
         "cohorts.id": "students.cohort_id"
       })
       .where({ "cohorts.id": id });
-    res.status(200).json(students);
+    if (students.length) {
+      res.status(200).json(students);
+    } else {
+      const code = 404;
+      res.status(code).json({
+        success: false,
+        code,
+        errorInfo: `Cohort with ID [${id}] not found.`
+      });
+    }
   } catch (err) {
     const code = 500;
     res.status(code).json({
@@ -108,6 +117,93 @@ router.get("/:id/students", async (req, res) => {
     });
   } finally {
     console.log("GET attempt for cohort ID [${id}] finished.");
+  }
+});
+
+router.put("/:id", async (req, res) => {
+  const { id } = req.params;
+
+  console.log(
+    `\nAttempting to PUT information updates for cohort with ID [${id}]...`
+  );
+
+  const infoUpdate = req.body;
+
+  console.log(
+    "Checking if all required fields were supplied and update is valid..."
+  );
+  if (infoUpdate.id) {
+    const code = 400;
+    res.status(code).json({
+      success: false,
+      code,
+      errorInfo: "ID updates are not allowed."
+    });
+    console.log(`Finished PUT attempt for cohort with ID [${id}]`);
+  } else if (infoUpdate.name) {
+    console.log(`Proceeding to update cohort with ID [${id}]...`);
+    try {
+      const updatedCohort = await db("cohorts")
+        .where({ id })
+        .update(infoUpdate);
+      if (updatedCohort) {
+        res.sendStatus(204);
+      } else {
+        const code = 404;
+        res.status(code).json({
+          success: false,
+          code,
+          errorInfo: `Cohort with ID [${id}] not found.`
+        });
+      }
+    } catch (err) {
+      const code = 500;
+      res.status(code).json({
+        success: false,
+        code,
+        errorInfo: err
+      });
+    } finally {
+      console.log(`Finished PUT attempt for cohort with ID [${id}]`);
+    }
+  } else {
+    const code = 400;
+    res.status(code).json({
+      success: false,
+      code,
+      errorInfo: "Name not supplied."
+    });
+    console.log(`Finished PUT attempt for cohort with ID [${id}]`);
+  }
+});
+
+router.delete("/:id", async (req, res) => {
+  const { id } = req.params;
+
+  console.log(`\nAttempting to DELETE cohort with ID [${id}]...`);
+  try {
+    const deletedCohort = await db("cohorts")
+      .where({ id })
+      .del();
+    if (deletedCohort) {
+      res.sendStatus(204);
+    } else {
+      const code = 404;
+      res.status(code).json({
+        success: false,
+        code,
+        errorInfo: `Cohort with ID [${id}] not found.`
+      });
+    }
+  } catch (err) {
+    const code = 500;
+    res.status(code).json({
+      success: false,
+      code,
+      errorInfo: err
+    });
+  } finally {
+    console.log(`Finished DELETE attempt for cohort with ID [${id}]`);
   }
 });
 
